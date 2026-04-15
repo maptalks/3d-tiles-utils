@@ -1,0 +1,34 @@
+{
+  "name": "@maptalks/3d-tiles-utils",
+  "version": "0.1.0",
+  "type": "module",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "dist/index.mjs",
+      "types": "dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publicConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "built",
+    "build:stub": "built --stub",
+    "prepublishOnly": "bun run build"
+  },
+  "devDependencies": {
+    "@bunit/build": "^0.0.7",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "fflate": "^0.8.2"
+  }
+}
