@@ -75,3 +75,59 @@ export function getStructureDataSync(container: StructureDataContainer): Structu
   }
   return null;
 }
+
+export function buildOidNodeMap(structureData: StructureData, outMap?: Map<number, StructureNode>): Map<number, StructureNode> {
+  const map = outMap ?? new Map<number, StructureNode>();
+
+  const treeIndex = structureData.defaultTree !== undefined ? structureData.defaultTree : 0;
+
+  if (structureData.trees && structureData.trees.length > treeIndex) {
+    const rootNode = structureData.trees[treeIndex]!;
+
+    function build(node: StructureNode) {
+      if (node.id != undefined) {
+        map.set(node.id, node);
+      }
+      if (node.children) {
+        for (const child of node.children) {
+          build(child);
+        }
+      }
+    }
+    build(rootNode);
+  }
+
+  return map;
+}
+
+function getParentPath(input: string): string | undefined {
+  if (!input) {
+    return undefined;
+  }
+
+  let normalized = input.replace(/\/$/, '');
+
+  const lastSlashIndex = normalized.lastIndexOf('/');
+
+  if (lastSlashIndex === -1) {
+    return undefined;
+  }
+
+  let parent = normalized.substring(0, lastSlashIndex);
+
+  if (parent === '') {
+    return '';
+  }
+
+  return parent;
+}
+
+export function getDetailURL(tilesetURL: string, oid: number): string {
+  const dir = (oid % 1000).toString().padStart(3, '0');
+  const relUri = `details/${dir}/${oid}.glb`;
+  const parent = getParentPath(tilesetURL);
+  if (parent === undefined) {
+    return relUri;
+  }
+  return `${parent}/${relUri}`;
+}
