@@ -1,6 +1,19 @@
 import { gunzipSync } from "fflate";
 
 /**
+ * modelInfo.json 的数据结构
+ */
+export interface ModelInfo {
+  animatable: boolean;
+  images: number;
+  materials: number;
+  pbr: boolean;
+  textures: number;
+  triangles: number;
+  vertices: number;
+}
+
+/**
  * structure.json 中的树节点结构
  */
 export interface StructureNode {
@@ -130,4 +143,12 @@ export function getDetailURL(tilesetURL: string, oid: number): string {
     return relUri;
   }
   return `${parent}/${relUri}`;
+}
+
+export async function getModelInfo(tilesetURL: string): Promise<ModelInfo> {
+  const parent = getParentPath(tilesetURL);
+  const url = `${parent}/modelInfo.json`;
+  const res = await fetch(url);
+  const data = await res.json();
+  return data as ModelInfo;
 }
