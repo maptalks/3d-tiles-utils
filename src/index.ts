@@ -33,9 +33,11 @@ export interface StructureData {
   trees: StructureNode[];
 }
 
-export interface StructureDataContainer {
+export interface Extension {
+  pmiUri?: string;
   structure?: StructureData;
   structureUri?: string;
+  tileinfoUri?: string;
 }
 
 function base64ToUint8Array(b64: string): Uint8Array {
@@ -74,13 +76,13 @@ function decodeGzipBase64DataUriSync(dataUri: string): string {
   return new TextDecoder("utf-8").decode(raw);
 }
 
-export function getStructureDataSync(container: StructureDataContainer): StructureData | null {
-  if (container.structure) {
-    return container.structure;
+export function getStructureDataSync(ext: Extension): StructureData | null {
+  if (ext.structure) {
+    return ext.structure;
   }
-  if (container.structureUri) {
-    if (container.structureUri.startsWith("data:")) {
-      const text = decodeGzipBase64DataUriSync(container.structureUri);
+  if (ext.structureUri) {
+    if (ext.structureUri.startsWith("data:")) {
+      const text = decodeGzipBase64DataUriSync(ext.structureUri);
       const data = JSON.parse(text) as StructureData;
       return data;
     }
@@ -111,6 +113,10 @@ export function buildOidNodeMap(structureData: StructureData, outMap?: Map<numbe
   }
 
   return map;
+}
+
+function isAbsoluteURI(uri: string): boolean {
+  return uri.indexOf("://") > 0;
 }
 
 function getParentPath(input: string): string | undefined {
@@ -151,4 +157,19 @@ export async function getModelInfo(tilesetURL: string): Promise<ModelInfo> {
   const res = await fetch(url);
   const data = await res.json();
   return data as ModelInfo;
+}
+
+export function getPmiURL(tilesetURL: string, ext: Extension): string | null {
+  if (!ext.pmiUri) {
+    return null;
+  }
+  if (isAbsoluteURI(ext.pmiUri)) {
+    return ext.pmiUri;
+  }
+  const relUri = ext.pmiUri;
+  const parent = getParentPath(tilesetURL);
+  if (parent === undefined) {
+    return relUri;
+  }
+  return `${parent}/${relUri}`;
 }
