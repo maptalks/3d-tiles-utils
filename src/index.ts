@@ -38,6 +38,7 @@ export interface Extension {
   structure?: StructureData;
   structureUri?: string;
   tileinfoUri?: string;
+  modelName?: string;
 }
 
 function base64ToUint8Array(b64: string): Uint8Array {
