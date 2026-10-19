@@ -142,14 +142,10 @@ function getParentPath(input: string): string | undefined {
   return parent;
 }
 
-export function getDetailURL(tilesetURL: string, oid: number): string {
+export function getDetailURL(baseAbsURL: string, oid: number): string {
   const dir = (oid % 1000).toString().padStart(3, '0');
-  const relUri = `details/${dir}/${oid}.glb`;
-  const parent = getParentPath(tilesetURL);
-  if (parent === undefined) {
-    return relUri;
-  }
-  return `${parent}/${relUri}`;
+  const uri = `${baseAbsURL}/${dir}/${oid}.glb`;
+  return uri;
 }
 
 export async function getModelInfo(tilesetURL: string): Promise<ModelInfo> {
