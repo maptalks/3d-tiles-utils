@@ -1,5 +1,7 @@
 import { gunzipSync } from "fflate";
 
+export * from "./camera";
+
 /**
  * modelInfo.json 的数据结构
  */
